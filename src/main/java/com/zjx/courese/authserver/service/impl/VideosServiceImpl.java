@@ -1,18 +1,19 @@
 package com.zjx.courese.authserver.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.zjx.courese.authserver.dao.VideosMapper;
-import com.zjx.courese.authserver.entity.Comments;
-import com.zjx.courese.authserver.entity.SearchRecords;
-import com.zjx.courese.authserver.entity.UsersLikeVideos;
+import com.zjx.courese.authserver.entity.*;
 import com.zjx.courese.authserver.entity.vo.CommentsVO;
 import com.zjx.courese.authserver.entity.vo.VideosVO;
 import com.zjx.courese.authserver.service.IVideosService;
-import com.zjx.courese.authserver.service.impl.*;
+import com.zjx.courese.authserver.utils.PageUtils;
+import com.zjx.courese.authserver.utils.Query;
 import com.zjx.courese.authserver.utils.TimeAgoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import com.zjx.courese.authserver.entity.Videos;
+import java.util.Map;
 
 @Service
 public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> implements IVideosService {
@@ -78,7 +79,39 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
 
         return videosVOPage;
     }
+    @Override
+    public PageUtils queryMyVideo(Map<String, Object> params) {
+        String userId;
+        Integer pageSum;
+        Integer size;
+        if(params.get("page")==null){
+            pageSum=1;
+        }else{
+            pageSum = params.get("page") instanceof Integer
+                    ? (Integer) params.get("page")
+                    : Integer.parseInt((String) params.get("page"));
+        }
+        if(params.get("size")==null){
+            size=10;
+        }else {
+            size = params.get("size") instanceof Integer
+                    ? (Integer) params.get("size")
+                    : Integer.parseInt((String) params.get("size"));
+        }
+        try {
+            userId = (String) params.get("userId");
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("invalid userId", e);
+        }
 
+        Page<Videos> pageParam = new Page<>(pageSum, size);
+        IPage<Videos> page = this.page(
+                pageParam,
+                new QueryWrapper<Videos>().eq("user_id", userId)
+        );
+
+        return new PageUtils(page);
+    }
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public Page<VideosVO> queryMyFollowVideos(String userId, Integer page, Integer pageSize) {

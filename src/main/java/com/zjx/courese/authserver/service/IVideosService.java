@@ -6,9 +6,11 @@ import com.zjx.courese.authserver.entity.Comments;
 import com.zjx.courese.authserver.entity.Videos;
 import com.zjx.courese.authserver.entity.vo.CommentsVO;
 import com.zjx.courese.authserver.entity.vo.VideosVO;
+import com.zjx.courese.authserver.utils.PageUtils;
 
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -29,6 +31,10 @@ public interface IVideosService extends IService<Videos> {
      * @Description: 查询我喜欢的视频列表
      */
     public Page<VideosVO> queryMyLikeVideos(String userId, Integer page, Integer pageSize);
+
+
+
+    PageUtils queryMyVideo(Map<String, Object> params);
 
     /**
      * @Description: 查询我关注的人的视频列表
