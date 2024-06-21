@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import org.csource.common.MyException;
@@ -234,5 +235,15 @@ public class VideoController extends BasicController {
         Page<CommentsVO> list = videosService.getAllComments(videoId, page, pageSize);
 
         return JSONResult.ok(list);
+    }
+    /**
+     * 删除(权限管理，只能删除自己的视频)
+     */
+    @RequestMapping("/delete")
+
+    public R delete(String videoId, String userId){
+        videosService.deleteVideo(userId,videoId);
+
+        return R.ok();
     }
 }

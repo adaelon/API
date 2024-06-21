@@ -13,7 +13,6 @@ import com.zjx.courese.authserver.entity.vo.CommentsVO;
 import com.zjx.courese.authserver.entity.vo.VideosVO;
 import com.zjx.courese.authserver.service.IVideosService;
 import com.zjx.courese.authserver.utils.PageUtils;
-import com.zjx.courese.authserver.utils.Query;
 import com.zjx.courese.authserver.utils.TimeAgoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +77,24 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
         videosVOPage.setRecords(list);
 
         return videosVOPage;
+    }
+
+    @Override
+    public boolean deleteVideo(String userId, String videoId) {
+        // 查找视频
+        Videos video = this.getById(videoId);
+        if (video == null) {
+            return false;
+        }
+
+        // 验证视频是否属于当前用户
+        if (!video.getUserId().equals(userId)) {
+           return false;
+        }
+
+        // 删除视频
+        this.removeById(videoId);
+        return true;
     }
     @Override
     public PageUtils queryMyVideo(Map<String, Object> params) {

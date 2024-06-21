@@ -33,6 +33,7 @@ public interface IVideosService extends IService<Videos> {
     public Page<VideosVO> queryMyLikeVideos(String userId, Integer page, Integer pageSize);
 
 
+    boolean deleteVideo(String userId, String videoId);
 
     PageUtils queryMyVideo(Map<String, Object> params);
 
