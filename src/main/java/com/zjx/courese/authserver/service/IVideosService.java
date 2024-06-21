@@ -11,6 +11,7 @@ import com.zjx.courese.authserver.utils.PageUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * <p>
@@ -20,6 +21,15 @@ import java.util.Map;
  
  */
 public interface IVideosService extends IService<Videos> {
+
+    //更新用户的点赞数
+
+    Videos updateLikeCounts(String id, Long likeCounts);
+    Optional<Videos> findVideoByIdAndDirection(String id, int direction);
+    void addReturnedVideo(String id);
+    boolean isVideoReturned(String id);
+    void addRevisitableVideo(String id);
+    boolean isVideoRevisitable(String id);
 
     /**
      * @Description: 分页查询视频列表

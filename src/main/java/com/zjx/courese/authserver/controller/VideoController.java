@@ -47,6 +47,20 @@ public class VideoController extends BasicController {
     @Autowired
     private VideosServiceImpl videosService;
 
+    @PutMapping("/updateLikes")
+    @ApiOperation("更新视频点赞数量")
+    public Videos updateLikeCounts(@RequestParam String id, @RequestParam Long likeCounts) {
+        System.out.println("运行到点赞了");
+        return videosService.updateLikeCounts(id, likeCounts);
+    }
+
+    @GetMapping("/navigate")
+    @ApiOperation("根据ID和方向查找视频")
+    public Videos navigateVideo(@RequestParam String id, @RequestParam int direction) {
+        return videosService.findVideoByIdAndDirection(id, direction)
+                .orElseThrow(() -> new IllegalArgumentException("未找到相应的视频"));
+    }
+
     @Value("${thumbnailType}")
     private String thumbnailType;
     @Value("${fileServer.url}")

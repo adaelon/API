@@ -20,8 +20,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> implements IVideosService {
@@ -33,6 +32,70 @@ public class VideosServiceImpl extends ServiceImpl<VideosMapper, Videos> impleme
     private UserServiceImpl usersService;
     @Autowired
     private CommentsServiceImpl commentsService;
+    @Autowired
+    private VideosMapper videosMapper;
+
+
+    //更新用户的点赞数量
+    @Override
+    public Videos updateLikeCounts(String id, Long likeCounts) {
+        Videos video = getById(id);
+        if (video != null) {
+            video.setLikeCounts(likeCounts);
+            updateById(video);
+        }
+        return video;
+    }
+
+    private final Set<String> returnedVideos = new HashSet<>();
+    private final Set<String> revisitableVideos = new HashSet<>();
+
+    @Override
+    public Optional<Videos> findVideoByIdAndDirection(String id, int direction) {
+        QueryWrapper<Videos> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("like_counts");
+        List<Videos> videosList = videosMapper.selectList(queryWrapper);
+
+        for (int i = 0; i < videosList.size(); i++) {
+            if (videosList.get(i).getId().equals(id)) {
+                int targetIndex = i + direction;
+                while (targetIndex >= 0 && targetIndex < videosList.size()) {
+                    Videos targetVideo = videosList.get(targetIndex);
+                    if (direction == -1 && isVideoRevisitable(targetVideo.getId())) {
+                        return Optional.of(targetVideo);
+                    } else if (direction != -1 && !isVideoReturned(targetVideo.getId())) {
+                        addReturnedVideo(targetVideo.getId());
+                        addRevisitableVideo(targetVideo.getId());
+                        return Optional.of(targetVideo);
+                    }
+                    targetIndex += direction;
+                }
+                break;
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public void addReturnedVideo(String id) {
+        returnedVideos.add(id);
+    }
+
+    @Override
+    public boolean isVideoReturned(String id) {
+        return returnedVideos.contains(id);
+    }
+
+    @Override
+    public void addRevisitableVideo(String id) {
+        revisitableVideos.add(id);
+    }
+
+    @Override
+    public boolean isVideoRevisitable(String id) {
+        return revisitableVideos.contains(id);
+    }
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
