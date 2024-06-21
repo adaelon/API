@@ -1,8 +1,8 @@
 spring:
   datasource:
-    username: summeroad
-    password: UAwz7620?
-    url: jdbc:mysql://119.3.183.185:3306/Restful?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: CHqh5489!
+    url: jdbc:mysql://121.43.60.1:3306/douyin?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
   ## redis配置
   redis:
